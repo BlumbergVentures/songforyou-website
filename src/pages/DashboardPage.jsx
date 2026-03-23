@@ -80,10 +80,7 @@ function SongCard({ song }) {
   const isDelivered = song.status === 'delivered' && song.song_url;
 
   const handlePlay = () => {
-    if (!audioRef.current) {
-      audioRef.current = new Audio(song.song_url);
-      audioRef.current.addEventListener('ended', () => setPlaying(false));
-    }
+    if (!audioRef.current) return;
     if (playing) {
       audioRef.current.pause();
       setPlaying(false);
@@ -97,7 +94,6 @@ function SongCard({ song }) {
     return () => {
       if (audioRef.current) {
         audioRef.current.pause();
-        audioRef.current = null;
       }
     };
   }, []);
@@ -295,19 +291,23 @@ function SongCard({ song }) {
         </div>
       )}
 
-      {isDelivered && playing && (
+      {isDelivered && (
         <div style={{
-          marginTop: '14px',
-          padding: '10px 14px',
-          background: 'rgba(255,255,255,0.05)',
+          marginTop: playing ? '14px' : 0,
+          padding: playing ? '10px 14px' : 0,
+          background: playing ? 'rgba(255,255,255,0.05)' : 'transparent',
           borderRadius: '10px',
-          border: '1px solid rgba(255,255,255,0.08)',
+          border: playing ? '1px solid rgba(255,255,255,0.08)' : 'none',
+          height: playing ? 'auto' : 0,
+          overflow: 'hidden',
         }}>
           <audio
+            ref={audioRef}
             src={song.song_url}
             controls
-            autoPlay
             onEnded={() => setPlaying(false)}
+            onPause={() => setPlaying(false)}
+            onPlay={() => setPlaying(true)}
             style={{ width: '100%', height: '36px' }}
           />
         </div>
