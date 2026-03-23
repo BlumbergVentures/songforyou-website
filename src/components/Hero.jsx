@@ -1,3 +1,5 @@
+import { colors } from '../styles/shared';
+
 export default function Hero({ onGetStarted }) {
   return (
     <section style={{
@@ -13,10 +15,10 @@ export default function Hero({ onGetStarted }) {
         border: '1px solid rgba(139,92,246,0.3)',
         borderRadius: '20px',
         fontSize: '14px',
-        color: '#a78bfa',
+        color: colors.purpleLight,
         marginBottom: '24px',
       }}>
-        🎁 7-Day Free Trial • 10 Songs/Month
+        7-Day Free Trial &bull; 10 Songs/Month
       </div>
       <h1 style={{
         fontSize: '56px',
@@ -31,7 +33,7 @@ export default function Hero({ onGetStarted }) {
       </h1>
       <p style={{
         fontSize: '20px',
-        color: 'rgba(255,255,255,0.6)',
+        color: colors.textMuted,
         maxWidth: '600px',
         margin: '0 auto 16px',
         lineHeight: '1.6',
@@ -39,38 +41,35 @@ export default function Hero({ onGetStarted }) {
         Create a one-of-a-kind song for weddings, birthdays, anniversaries, or any special moment. Just share your story — we'll handle the rest.
       </p>
       <p style={{
-        fontSize: '32px',
+        fontSize: '28px',
         fontWeight: '700',
-        color: '#8b5cf6',
+        color: colors.purple,
         marginBottom: '32px',
       }}>
-        Start Free — Then $9.99/week
+        Try free for 7 days, then $9.99/week <span style={{ fontSize: '18px', fontWeight: '500', color: colors.textFaint }}>(~$43/month)</span>
       </p>
-      <div style={{ display: 'flex', gap: '16px', justifyContent: 'center', flexWrap: 'wrap' }}>
-        <button
-          onClick={onGetStarted}
-          style={{
-            padding: '16px 32px',
-            background: 'linear-gradient(135deg, #8b5cf6 0%, #ec4899 100%)',
-            border: 'none',
-            borderRadius: '12px',
-            color: '#fff',
-            fontSize: '16px',
-            fontWeight: '600',
-            cursor: 'pointer',
-            display: 'flex',
-            alignItems: 'center',
-            gap: '8px',
-          }}>
-          🎤 Start Your Free Trial
-        </button>
-      </div>
+      <button
+        onClick={onGetStarted}
+        style={{
+          padding: '16px 36px',
+          background: colors.gradient,
+          border: 'none',
+          borderRadius: '12px',
+          color: '#fff',
+          fontSize: '17px',
+          fontWeight: '600',
+          cursor: 'pointer',
+          transition: 'transform 0.2s ease, box-shadow 0.2s ease',
+        }}
+      >
+        Create Your First Song
+      </button>
       <p style={{
         fontSize: '14px',
-        color: 'rgba(255,255,255,0.4)',
+        color: colors.textFaint,
         marginTop: '16px',
       }}>
-        No credit card required to browse. Cancel anytime.
+        7-day free trial. Cancel anytime. Credit card required at checkout.
       </p>
     </section>
   );

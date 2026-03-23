@@ -221,7 +221,7 @@ export default function AccountPage() {
           </div>
 
           <p style={{ color: 'rgba(255,255,255,0.7)', fontSize: '15px', margin: '0 0 6px 0', fontWeight: '600' }}>
-            SongForYou — Unlimited Creativity
+            SongForYou Pro — 10 Songs/Month
           </p>
 
           {subscriptionStatus === 'trialing' && customer?.trial_end && (
