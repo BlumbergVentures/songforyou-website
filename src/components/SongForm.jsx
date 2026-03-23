@@ -249,7 +249,7 @@ export default function SongForm({ onAuthRequired }) {
             transition: 'all 0.3s ease',
           }}
         >
-          Sign In to Create Your Song
+          Sign Up Free to Create Your Song
         </button>
       );
     }
@@ -257,45 +257,50 @@ export default function SongForm({ onAuthRequired }) {
     // Authenticated but no subscription
     if (!hasActiveSubscription) {
       return (
-        <button
-          onClick={handleSubscribe}
-          disabled={subscribing || !canSubmit}
-          style={{
-            width: '100%',
-            padding: '18px',
-            background: (canSubmit && !subscribing)
-              ? 'linear-gradient(135deg, #8b5cf6 0%, #ec4899 100%)'
-              : 'rgba(255,255,255,0.1)',
-            border: 'none',
-            borderRadius: '12px',
-            color: (canSubmit && !subscribing) ? '#fff' : 'rgba(255,255,255,0.4)',
-            fontSize: '18px',
-            fontWeight: '700',
-            cursor: (canSubmit && !subscribing) ? 'pointer' : 'not-allowed',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            gap: '10px',
-            transition: 'all 0.3s ease',
-          }}
-        >
-          {subscribing ? (
-            <>
-              <span style={{
-                display: 'inline-block',
-                width: '20px',
-                height: '20px',
-                border: '3px solid rgba(255,255,255,0.3)',
-                borderTopColor: '#fff',
-                borderRadius: '50%',
-                animation: 'spin 0.8s linear infinite',
-              }} />
-              Redirecting...
-            </>
-          ) : (
-            'Subscribe to Create Songs'
-          )}
-        </button>
+        <>
+          <button
+            onClick={handleSubscribe}
+            disabled={subscribing || !canSubmit}
+            style={{
+              width: '100%',
+              padding: '18px',
+              background: (canSubmit && !subscribing)
+                ? 'linear-gradient(135deg, #8b5cf6 0%, #ec4899 100%)'
+                : 'rgba(255,255,255,0.1)',
+              border: 'none',
+              borderRadius: '12px',
+              color: (canSubmit && !subscribing) ? '#fff' : 'rgba(255,255,255,0.4)',
+              fontSize: '18px',
+              fontWeight: '700',
+              cursor: (canSubmit && !subscribing) ? 'pointer' : 'not-allowed',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: '10px',
+              transition: 'all 0.3s ease',
+            }}
+          >
+            {subscribing ? (
+              <>
+                <span style={{
+                  display: 'inline-block',
+                  width: '20px',
+                  height: '20px',
+                  border: '3px solid rgba(255,255,255,0.3)',
+                  borderTopColor: '#fff',
+                  borderRadius: '50%',
+                  animation: 'spin 0.8s linear infinite',
+                }} />
+                Redirecting...
+              </>
+            ) : (
+              'Start Free Trial & Create This Song'
+            )}
+          </button>
+          <p style={{ textAlign: 'center', fontSize: '13px', color: 'rgba(255,255,255,0.4)', marginTop: '10px' }}>
+            You'll be redirected to Stripe to set up your 7-day free trial.
+          </p>
+        </>
       );
     }
 

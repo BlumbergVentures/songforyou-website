@@ -1,3 +1,5 @@
+import { colors } from '../styles/shared';
+
 export default function CTA({ onGetStarted }) {
   return (
     <section style={{
@@ -15,23 +17,31 @@ export default function CTA({ onGetStarted }) {
         <h2 style={{ fontSize: '32px', fontWeight: '700', marginBottom: '16px' }}>
           Ready to Create Something Special?
         </h2>
-        <p style={{ color: 'rgba(255,255,255,0.6)', fontSize: '18px', marginBottom: '32px' }}>
-          7-day free trial • 10 songs/month • Cancel anytime
+        <p style={{ color: colors.textMuted, fontSize: '18px', marginBottom: '32px' }}>
+          7-day free trial &bull; 10 songs/month &bull; Cancel anytime
         </p>
         <button
           onClick={onGetStarted}
           style={{
             padding: '18px 48px',
-            background: 'linear-gradient(135deg, #8b5cf6 0%, #ec4899 100%)',
+            background: colors.gradient,
             border: 'none',
             borderRadius: '12px',
             color: '#fff',
             fontSize: '18px',
             fontWeight: '700',
             cursor: 'pointer',
+            transition: 'transform 0.2s ease, box-shadow 0.2s ease',
           }}>
-          Start Free Trial
+          Create Your First Song
         </button>
+        <p style={{
+          color: colors.textFaint,
+          fontSize: '13px',
+          marginTop: '16px',
+        }}>
+          Secure checkout via Stripe. Cancel anytime.
+        </p>
       </div>
     </section>
   );

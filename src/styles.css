@@ -34,12 +34,101 @@ button:hover {
   50% { opacity: 0.4; }
 }
 
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Hamburger button - hidden on desktop, shown on mobile */
+.hamburger-btn {
+  display: none;
+  flex-direction: column;
+  justify-content: center;
+  gap: 5px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 8px;
+  z-index: 200;
+}
+
+.hamburger-btn span {
+  display: block;
+  width: 24px;
+  height: 2px;
+  background: #fff;
+  border-radius: 2px;
+  transition: transform 0.3s ease, opacity 0.3s ease;
+}
+
+.hamburger-btn.open span:nth-child(1) {
+  transform: rotate(45deg) translate(5px, 5px);
+}
+
+.hamburger-btn.open span:nth-child(2) {
+  opacity: 0;
+}
+
+.hamburger-btn.open span:nth-child(3) {
+  transform: rotate(-45deg) translate(5px, -5px);
+}
+
+/* Mobile menu overlay */
+.mobile-menu-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(10,10,15,0.95);
+  backdrop-filter: blur(12px);
+  z-index: 150;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  animation: fadeInUp 0.2s ease;
+}
+
+.mobile-menu-overlay a,
+.mobile-menu-overlay button {
+  color: #fff;
+  text-decoration: none;
+  font-size: 18px;
+  font-weight: 500;
+  padding: 16px 32px;
+  width: 100%;
+  max-width: 300px;
+  text-align: center;
+  border-radius: 12px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-family: inherit;
+  transition: background 0.2s ease;
+}
+
+.mobile-menu-overlay a:hover,
+.mobile-menu-overlay button:hover {
+  background: rgba(255,255,255,0.08);
+}
+
+.mobile-menu-overlay .mobile-cta {
+  background: linear-gradient(135deg, #8b5cf6 0%, #ec4899 100%);
+  margin-top: 16px;
+  font-weight: 600;
+}
+
 @media (max-width: 768px) {
   header {
     padding: 16px 20px !important;
   }
-  header nav {
+  .desktop-nav {
     display: none !important;
+  }
+  .hamburger-btn {
+    display: flex !important;
   }
   section {
     padding: 40px 20px !important;
@@ -51,4 +140,3 @@ button:hover {
     font-size: 28px !important;
   }
 }
-
