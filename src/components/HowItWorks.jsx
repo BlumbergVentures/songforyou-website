@@ -1,8 +1,8 @@
 export default function HowItWorks() {
   const steps = [
     { num: '1', title: 'Share Your Story', desc: 'Tell us about the person, your memories together, and the occasion.' },
-    { num: '2', title: 'Choose Your Style', desc: 'Pick the genre, mood, and voice type you want for your song.' },
-    { num: '3', title: 'Receive Your Song', desc: 'Get your custom song delivered to your email within 48 hours!' },
+    { num: '2', title: 'Choose Your Style', desc: 'Pick from 10 artist templates like Ed Sheeran or Adele, or fully customize your genre, mood, and voice.' },
+    { num: '3', title: 'Receive Your Song', desc: 'Your AI-generated song is delivered to your email and dashboard in minutes!' },
   ];
 
   return (

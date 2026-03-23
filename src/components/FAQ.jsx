@@ -1,6 +1,6 @@
 export default function FAQ() {
   const faqs = [
-    { q: 'How long does it take to receive my song?', a: 'Your custom song will be delivered to your email within 48 hours of submission.' },
+    { q: 'How long does it take to receive my song?', a: 'Songs are generated automatically using AI and typically delivered to your email and dashboard within minutes of submission.' },
     { q: 'How does the subscription work?', a: 'Start with a 7-day free trial. After that, it\'s $9.99/week for up to 10 custom songs per month. Cancel anytime from your account page.' },
     { q: 'What artist styles are available?', a: 'Choose from 10 pre-built artist templates including Ed Sheeran, Taylor Swift, Adele, Drake, and more — or create a fully custom style.' },
     { q: 'Can I request changes to my song?', a: 'Yes! If you\'d like adjustments, just reply to your delivery email and we\'ll make revisions.' },

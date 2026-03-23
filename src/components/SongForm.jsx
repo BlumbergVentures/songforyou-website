@@ -204,7 +204,7 @@ export default function SongForm({ onAuthRequired }) {
 
       const remaining = data.songsRemaining ?? data.songs_remaining ?? null;
       setSongsRemaining(remaining);
-      setSuccessMessage("Song request submitted! You'll receive it within 48 hours.");
+      setSuccessMessage("Song request submitted! Your song is being generated and will be delivered to your email in minutes.");
 
       // Reset form
       setSelectedOccasion('');

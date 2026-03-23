@@ -1,7 +1,7 @@
 export default function Features() {
   const features = [
     { icon: '🎵', title: 'Full Song', desc: '2-3 minutes' },
-    { icon: '⚡', title: 'Fast Delivery', desc: '48 hours' },
+    { icon: '⚡', title: 'Fast Delivery', desc: 'Minutes, not days' },
     { icon: '🎧', title: 'MP3 Download', desc: 'Yours forever' },
     { icon: '✨', title: 'Fully Custom', desc: 'Your story, your style' },
     { icon: '🎤', title: '10 Artist Styles', desc: 'Pre-built templates' },
