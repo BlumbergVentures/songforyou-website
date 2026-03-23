@@ -18,7 +18,7 @@ export default function HowItWorks() {
         Get your personalized song in 3 simple steps
       </p>
 
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '32px' }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '32px' }}>
         {steps.map((step, i) => (
           <div key={i} style={{
             background: 'rgba(255,255,255,0.03)',

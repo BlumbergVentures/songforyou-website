@@ -15,7 +15,7 @@ export default function Features() {
     }}>
       <div style={{
         display: 'grid',
-        gridTemplateColumns: 'repeat(5, 1fr)',
+        gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))',
         gap: '24px',
         textAlign: 'center',
       }}>

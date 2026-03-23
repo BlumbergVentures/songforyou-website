@@ -19,7 +19,7 @@ export default function Testimonials() {
         See what our customers are saying
       </p>
 
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '24px' }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '24px' }}>
         {testimonials.map((t, i) => (
           <div key={i} style={{
             background: 'rgba(255,255,255,0.03)',
