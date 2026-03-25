@@ -60,6 +60,10 @@ export default function SongForm({ onAuthRequired }) {
 
   // Fetch artist templates on mount
   useEffect(() => {
+    if (!supabase) {
+      setTemplatesLoading(false);
+      return;
+    }
     const fetchTemplates = async () => {
       try {
         const { data, error } = await supabase

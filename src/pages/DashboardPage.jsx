@@ -75,9 +75,10 @@ function StatusBadge({ status }) {
 
 function SongCard({ song }) {
   const [playing, setPlaying] = useState(false);
+  const [audioError, setAudioError] = useState(false);
   const audioRef = useRef(null);
 
-  const isDelivered = song.status === 'delivered' && song.song_url;
+  const isDelivered = song.status === 'delivered' && song.song_url && !audioError;
 
   const handlePlay = () => {
     if (!audioRef.current) return;
@@ -85,8 +86,26 @@ function SongCard({ song }) {
       audioRef.current.pause();
       setPlaying(false);
     } else {
-      audioRef.current.play();
+      audioRef.current.play().catch(() => setAudioError(true));
       setPlaying(true);
+    }
+  };
+
+  const handleDownload = async () => {
+    try {
+      const response = await fetch(song.song_url);
+      const blob = await response.blob();
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `songforyou-${song.recipient_name || song.occasion || 'song'}.mp3`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    } catch {
+      // Fallback: open in new tab
+      window.open(song.song_url, '_blank', 'noopener,noreferrer');
     }
   };
 
@@ -267,10 +286,8 @@ function SongCard({ song }) {
           >
             {playing ? '⏸ Pause' : '▶ Play'}
           </button>
-          <a
-            href={song.song_url}
-            target="_blank"
-            rel="noopener noreferrer"
+          <button
+            onClick={handleDownload}
             style={{
               display: 'inline-flex',
               alignItems: 'center',
@@ -282,12 +299,11 @@ function SongCard({ song }) {
               color: '#fff',
               fontSize: '14px',
               fontWeight: '600',
-              textDecoration: 'none',
               cursor: 'pointer',
             }}
           >
             ↓ Download
-          </a>
+          </button>
         </div>
       )}
 
@@ -308,6 +324,7 @@ function SongCard({ song }) {
             onEnded={() => setPlaying(false)}
             onPause={() => setPlaying(false)}
             onPlay={() => setPlaying(true)}
+            onError={() => setAudioError(true)}
             style={{ width: '100%', height: '36px' }}
           />
         </div>
@@ -358,28 +375,39 @@ export default function DashboardPage() {
 
   const currentMonth = new Date().toISOString().slice(0, 7); // YYYY-MM
 
-  useEffect(() => {
-    async function fetchSongs() {
-      setLoading(true);
-      const { data, error } = await supabase
-        .from('song_requests')
-        .select('*')
-        .order('created_at', { ascending: false });
+  const fetchSongs = async (isInitial = false) => {
+    if (isInitial) setLoading(true);
+    const { data, error } = await supabase
+      .from('song_requests')
+      .select('*')
+      .order('created_at', { ascending: false });
 
-      if (error) {
-        console.error('Error fetching songs:', error);
-      } else {
-        setSongs(data || []);
-        const thisMonth = (data || []).filter(
-          (s) => s.billing_month === currentMonth
-        );
-        setMonthlyUsage(thisMonth.length);
-      }
-      setLoading(false);
+    if (error) {
+      if (import.meta.env.DEV) console.error('Error fetching songs:', error);
+    } else {
+      setSongs(data || []);
+      const thisMonth = (data || []).filter(
+        (s) => s.billing_month === currentMonth
+      );
+      setMonthlyUsage(thisMonth.length);
     }
+    if (isInitial) setLoading(false);
+  };
 
-    fetchSongs();
+  useEffect(() => {
+    fetchSongs(true);
   }, [currentMonth]);
+
+  // Auto-poll when there are pending or generating songs
+  useEffect(() => {
+    const hasPending = songs.some(
+      (s) => s.status === 'pending' || s.status === 'generating'
+    );
+    if (!hasPending) return;
+
+    const interval = setInterval(() => fetchSongs(false), 10000);
+    return () => clearInterval(interval);
+  }, [songs]);
 
   const formatDate = (dateStr) => {
     if (!dateStr) return '';

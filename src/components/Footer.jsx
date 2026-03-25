@@ -1,3 +1,4 @@
+import { Link } from 'react-router-dom';
 import { colors } from '../styles/shared';
 
 export default function Footer() {
@@ -62,9 +63,10 @@ export default function Footer() {
           <h4 style={{ fontSize: '14px', fontWeight: '600', marginBottom: '16px', color: colors.textSecondary }}>
             Support
           </h4>
-          <a href="mailto:support@songforyou.com" style={linkStyle}>support@songforyou.com</a>
-          <a href="#" style={linkStyle}>Terms of Service</a>
-          <a href="#" style={linkStyle}>Privacy Policy</a>
+          <a href="mailto:support@songforyou.app" style={linkStyle}>support@songforyou.app</a>
+          <Link to="/terms" style={linkStyle}>Terms of Service</Link>
+          <Link to="/privacy" style={linkStyle}>Privacy Policy</Link>
+          <Link to="/refunds" style={linkStyle}>Refund Policy</Link>
         </div>
       </div>
 
@@ -75,7 +77,7 @@ export default function Footer() {
         textAlign: 'center',
       }}>
         <p style={{ color: colors.textFaint, fontSize: '13px', margin: 0 }}>
-          &copy; 2026 SongForYou. All rights reserved. Songs are generated using AI technology.
+          &copy; 2026 SongForYou, operated by Blumberg Ventures. All rights reserved. Songs are generated using AI technology.
         </p>
       </div>
     </footer>
