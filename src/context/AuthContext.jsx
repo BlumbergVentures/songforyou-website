@@ -56,11 +56,15 @@ export function AuthProvider({ children }) {
     return () => subscription.unsubscribe();
   }, []);
 
-  const signUp = async (email, password) => {
+  const signUp = async (email, password, displayName) => {
     if (!supabase) throw new Error('Backend not configured');
     const { data, error } = await supabase.auth.signUp({
       email,
       password,
+      options: {
+        emailRedirectTo: `${window.location.origin}/auth/callback`,
+        data: displayName ? { display_name: displayName } : undefined,
+      },
     });
     if (error) throw error;
     return data;

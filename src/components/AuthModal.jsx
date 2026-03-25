@@ -6,6 +6,7 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'signin' }) {
   const [mode, setMode] = useState(initialMode);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [displayName, setDisplayName] = useState('');
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [signUpSuccess, setSignUpSuccess] = useState(false);
@@ -41,7 +42,7 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'signin' }) {
 
     try {
       if (mode === 'signup') {
-        await signUp(email, password);
+        await signUp(email, password, displayName.trim() || undefined);
         setSignUpSuccess(true);
       } else if (mode === 'forgot') {
         await resetPassword(email);
@@ -240,6 +241,20 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'signin' }) {
 
         <form style={styles.form} onSubmit={handleSubmit}>
           {error && <div style={styles.error}>{error}</div>}
+
+          {mode === 'signup' && (
+            <div>
+              <label style={styles.label}>Display Name</label>
+              <input
+                style={styles.input}
+                type="text"
+                placeholder="Your name"
+                value={displayName}
+                onChange={(e) => setDisplayName(e.target.value)}
+                required
+              />
+            </div>
+          )}
 
           <div>
             <label style={styles.label}>Email</label>

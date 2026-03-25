@@ -5,6 +5,12 @@ import {
   errorResponse,
 } from "../_shared/utils.ts";
 import { buildMusicPrompt } from "../_shared/music.ts";
+import { sendEmail } from "../_shared/email.ts";
+import {
+  songDeliveryEmail,
+  ownerNotificationEmail,
+  ownerErrorEmail,
+} from "../_shared/email-templates.ts";
 
 const ELEVENLABS_API_URL = "https://api.elevenlabs.io/v1/music/compose";
 const SONG_DURATION_MS = 180000; // 3 minutes
@@ -95,73 +101,28 @@ Deno.serve(async (req) => {
       .update({ status: "delivered", song_url: songUrl })
       .eq("id", songRequestId);
 
-    // Send delivery email via Resend
-    const resendKey = Deno.env.get("RESEND_API_KEY");
-    const fromEmail = Deno.env.get("FROM_EMAIL") || "hello@songforyou.app";
+    // Send delivery email
     const siteUrl = Deno.env.get("SITE_URL") || "https://songforyou.app";
 
-    if (resendKey && userEmail) {
-      const occasionLabel = songRequest.occasion
-        ? songRequest.occasion.charAt(0).toUpperCase() +
-          songRequest.occasion.slice(1)
-        : "Custom";
-      const recipientStr = songRequest.recipient_name
-        ? ` for ${songRequest.recipient_name}`
-        : "";
-
-      await fetch("https://api.resend.com/emails", {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${resendKey}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          from: `SongForYou <${fromEmail}>`,
-          to: [userEmail],
-          subject: `Your custom ${occasionLabel.toLowerCase()} song is ready! 🎵`,
-          html: `
-            <div style="font-family: sans-serif; max-width: 560px; margin: 0 auto; color: #333;">
-              <h1 style="color: #8b5cf6;">Your song is ready!</h1>
-              <p>Your custom <strong>${occasionLabel}</strong> song${recipientStr} has been generated and is ready to play.</p>
-              <p style="margin: 24px 0;">
-                <a href="${siteUrl}/dashboard" style="display: inline-block; padding: 14px 32px; background: linear-gradient(135deg, #8b5cf6, #ec4899); color: #fff; text-decoration: none; border-radius: 10px; font-weight: 600;">
-                  Play & Download Your Song
-                </a>
-              </p>
-              <p style="color: #666; font-size: 14px;">
-                Song Details:<br/>
-                Occasion: ${occasionLabel}<br/>
-                Style: ${(songRequest.genres || []).join(", ") || "Custom"}<br/>
-              </p>
-              <p style="color: #666; font-size: 14px; margin-top: 24px;">
-                Listen, download, and share your one-of-a-kind song from your dashboard.
-              </p>
-              <p style="color: #999; font-size: 12px; margin-top: 32px;">
-                — The SongForYou Team<br/>
-                <a href="${siteUrl}" style="color: #8b5cf6;">songforyou.app</a>
-              </p>
-            </div>
-          `,
-        }),
+    if (userEmail) {
+      const template = songDeliveryEmail({
+        occasion: songRequest.occasion || "Custom",
+        recipientName: songRequest.recipient_name,
+        genres: songRequest.genres,
+        dashboardUrl: `${siteUrl}/dashboard`,
       });
+      await sendEmail({ to: userEmail, ...template });
     }
 
     // Notify owner
     const ownerEmail = Deno.env.get("OWNER_EMAIL");
-    if (resendKey && ownerEmail) {
-      await fetch("https://api.resend.com/emails", {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${resendKey}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          from: `SongForYou <${fromEmail}>`,
-          to: [ownerEmail],
-          subject: `New song delivered: ${songRequest.occasion || "Custom"} for ${songRequest.recipient_name || "someone"}`,
-          html: `<p>Song ${songRequestId} delivered to ${userEmail}.</p><p><a href="${songUrl}">Download MP3</a></p>`,
-        }),
+    if (ownerEmail) {
+      const template = ownerNotificationEmail({
+        songRequestId: songRequestId!,
+        userEmail: userEmail || "unknown",
+        songUrl,
       });
+      await sendEmail({ to: ownerEmail, ...template });
     }
 
     return jsonResponse({ success: true, songUrl });
@@ -175,23 +136,13 @@ Deno.serve(async (req) => {
     }
 
     // Notify owner of failure
-    const resendKey = Deno.env.get("RESEND_API_KEY");
     const ownerEmail = Deno.env.get("OWNER_EMAIL");
-    const fromEmail = Deno.env.get("FROM_EMAIL") || "hello@songforyou.app";
-    if (resendKey && ownerEmail) {
-      await fetch("https://api.resend.com/emails", {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${resendKey}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          from: `SongForYou <${fromEmail}>`,
-          to: [ownerEmail],
-          subject: `Song generation FAILED: ${songRequestId}`,
-          html: `<p>Error: ${err.message}</p>`,
-        }),
+    if (ownerEmail && songRequestId) {
+      const template = ownerErrorEmail({
+        songRequestId,
+        errorMessage: err.message || "Unknown error",
       });
+      await sendEmail({ to: ownerEmail, ...template });
     }
 
     return errorResponse(err.message || "Song generation failed", 500);
