@@ -9,6 +9,10 @@ export default function AuthCallbackPage() {
 
   useEffect(() => {
     const handleCallback = async () => {
+      if (!supabase) {
+        setError('Backend not configured. Please try again later.');
+        return;
+      }
       const { error } = await supabase.auth.getSession();
       if (error) {
         setError('Failed to confirm your email. Please try signing in again.');
