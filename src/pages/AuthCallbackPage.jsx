@@ -8,21 +8,33 @@ export default function AuthCallbackPage() {
   const [error, setError] = useState('');
 
   useEffect(() => {
-    const handleCallback = async () => {
-      if (!supabase) {
-        setError('Backend not configured. Please try again later.');
-        return;
-      }
-      const { error } = await supabase.auth.getSession();
-      if (error) {
-        setError('Failed to confirm your email. Please try signing in again.');
-        return;
-      }
-      // Redirect to dashboard after successful email confirmation
-      navigate('/dashboard', { replace: true });
-    };
+    if (!supabase) {
+      setError('Backend not configured. Please try again later.');
+      return;
+    }
 
-    handleCallback();
+    // Listen for auth state changes — handles both email confirmation
+    // (token_hash in query params) and OAuth redirects (hash fragment)
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(
+      (event, session) => {
+        if (event === 'SIGNED_IN' && session) {
+          navigate('/dashboard', { replace: true });
+        }
+      }
+    );
+
+    // Also try getSession() for cases where onAuthStateChange already fired
+    supabase.auth.getSession().then(({ data: { session }, error: err }) => {
+      if (err) {
+        setError('Authentication failed. Please try signing in again.');
+        return;
+      }
+      if (session) {
+        navigate('/dashboard', { replace: true });
+      }
+    });
+
+    return () => subscription.unsubscribe();
   }, [navigate]);
 
   if (error) {

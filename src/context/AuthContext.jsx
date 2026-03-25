@@ -97,6 +97,17 @@ export function AuthProvider({ children }) {
     if (error) throw error;
   };
 
+  const signInWithGoogle = async () => {
+    if (!supabase) throw new Error('Backend not configured');
+    const { error } = await supabase.auth.signInWithOAuth({
+      provider: 'google',
+      options: {
+        redirectTo: `${window.location.origin}/auth/callback`,
+      },
+    });
+    if (error) throw error;
+  };
+
   const value = {
     user,
     session,
@@ -106,6 +117,7 @@ export function AuthProvider({ children }) {
     signIn,
     signOut,
     resetPassword,
+    signInWithGoogle,
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

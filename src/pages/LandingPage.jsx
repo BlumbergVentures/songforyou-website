@@ -4,6 +4,7 @@ import Header from '../components/Header';
 import Hero from '../components/Hero';
 import Features from '../components/Features';
 import HowItWorks from '../components/HowItWorks';
+import SongExamples from '../components/SongExamples';
 import Testimonials from '../components/Testimonials';
 import Pricing from '../components/Pricing';
 import SongForm from '../components/SongForm';
@@ -61,6 +62,7 @@ export default function LandingPage() {
       <Hero onGetStarted={handleGetStarted} />
       <Features />
       <HowItWorks />
+      <SongExamples />
       <Testimonials />
       <Pricing onGetStarted={handleGetStarted} />
       <SongForm onAuthRequired={handleSignUp} />
