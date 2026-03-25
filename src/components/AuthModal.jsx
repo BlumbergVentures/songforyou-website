@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 
 export default function AuthModal({ isOpen, onClose, initialMode = 'signin' }) {
@@ -8,12 +9,16 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'signin' }) {
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [signUpSuccess, setSignUpSuccess] = useState(false);
-  const { signUp, signIn } = useAuth();
+  const [resetSent, setResetSent] = useState(false);
+  const [agreedToTerms, setAgreedToTerms] = useState(false);
+  const { signUp, signIn, resetPassword } = useAuth();
 
   useEffect(() => {
     setMode(initialMode);
     setError('');
     setSignUpSuccess(false);
+    setResetSent(false);
+    setAgreedToTerms(false);
   }, [initialMode, isOpen]);
 
   if (!isOpen) return null;
@@ -21,12 +26,26 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'signin' }) {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
+
+    if (mode === 'signup' && password.length < 8) {
+      setError('Password must be at least 8 characters.');
+      return;
+    }
+
+    if (mode === 'signup' && !agreedToTerms) {
+      setError('You must agree to the Terms of Service and Privacy Policy.');
+      return;
+    }
+
     setIsLoading(true);
 
     try {
       if (mode === 'signup') {
         await signUp(email, password);
         setSignUpSuccess(true);
+      } else if (mode === 'forgot') {
+        await resetPassword(email);
+        setResetSent(true);
       } else {
         await signIn(email, password);
         onClose();
@@ -42,6 +61,7 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'signin' }) {
     setMode(mode === 'signin' ? 'signup' : 'signin');
     setError('');
     setSignUpSuccess(false);
+    setResetSent(false);
   };
 
   const handleOverlayClick = (e) => {
@@ -170,7 +190,7 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'signin' }) {
     return (
       <div style={styles.overlay} onClick={handleOverlayClick}>
         <div style={styles.modal}>
-          <button style={styles.closeButton} onClick={onClose}>&times;</button>
+          <button style={styles.closeButton} onClick={onClose} aria-label="Close">&times;</button>
           <div style={styles.title}>Check your email</div>
           <div style={styles.success}>
             Check your email to confirm your account
@@ -180,18 +200,43 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'signin' }) {
     );
   }
 
+  if (resetSent) {
+    return (
+      <div style={styles.overlay} onClick={handleOverlayClick}>
+        <div style={styles.modal}>
+          <button style={styles.closeButton} onClick={onClose} aria-label="Close">&times;</button>
+          <div style={styles.title}>Check your email</div>
+          <div style={styles.success}>
+            If an account exists for {email}, you'll receive a password reset link.
+          </div>
+          <div style={styles.toggleText}>
+            <button style={styles.toggleLink} onClick={() => { setMode('signin'); setResetSent(false); }}>
+              Back to Sign In
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  const titles = {
+    signin: 'Welcome Back',
+    signup: 'Create Account',
+    forgot: 'Reset Password',
+  };
+
+  const subtitles = {
+    signin: 'Sign in to your account',
+    signup: 'Sign up to get started',
+    forgot: 'Enter your email to receive a reset link',
+  };
+
   return (
     <div style={styles.overlay} onClick={handleOverlayClick}>
       <div style={styles.modal}>
-        <button style={styles.closeButton} onClick={onClose}>&times;</button>
-        <div style={styles.title}>
-          {mode === 'signin' ? 'Welcome Back' : 'Create Account'}
-        </div>
-        <div style={styles.subtitle}>
-          {mode === 'signin'
-            ? 'Sign in to your account'
-            : 'Sign up to get started'}
-        </div>
+        <button style={styles.closeButton} onClick={onClose} aria-label="Close">&times;</button>
+        <div style={styles.title}>{titles[mode]}</div>
+        <div style={styles.subtitle}>{subtitles[mode]}</div>
 
         <form style={styles.form} onSubmit={handleSubmit}>
           {error && <div style={styles.error}>{error}</div>}
@@ -208,33 +253,86 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'signin' }) {
             />
           </div>
 
-          <div>
-            <label style={styles.label}>Password</label>
-            <input
-              style={styles.input}
-              type="password"
-              placeholder="Enter your password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-            />
-          </div>
+          {mode !== 'forgot' && (
+            <div>
+              <label style={styles.label}>Password{mode === 'signup' ? ' (min 8 characters)' : ''}</label>
+              <input
+                style={styles.input}
+                type="password"
+                placeholder="Enter your password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+                minLength={mode === 'signup' ? 8 : undefined}
+              />
+            </div>
+          )}
+
+          {mode === 'signup' && (
+            <label style={{
+              display: 'flex',
+              alignItems: 'flex-start',
+              gap: '10px',
+              cursor: 'pointer',
+              fontSize: '13px',
+              color: 'rgba(255,255,255,0.5)',
+              lineHeight: 1.5,
+            }}>
+              <input
+                type="checkbox"
+                checked={agreedToTerms}
+                onChange={(e) => setAgreedToTerms(e.target.checked)}
+                style={{ marginTop: '3px', accentColor: '#8b5cf6' }}
+              />
+              <span>
+                I agree to the{' '}
+                <Link to="/terms" style={{ color: '#8b5cf6', textDecoration: 'none' }} onClick={onClose}>
+                  Terms of Service
+                </Link>{' '}
+                and{' '}
+                <Link to="/privacy" style={{ color: '#8b5cf6', textDecoration: 'none' }} onClick={onClose}>
+                  Privacy Policy
+                </Link>
+              </span>
+            </label>
+          )}
 
           <button style={styles.button} type="submit" disabled={isLoading}>
             {isLoading
               ? 'Loading...'
               : mode === 'signin'
               ? 'Sign In'
+              : mode === 'forgot'
+              ? 'Send Reset Link'
               : 'Sign Up'}
           </button>
         </form>
 
-        <div style={styles.toggleText}>
-          {mode === 'signin' ? "Don't have an account? " : 'Already have an account? '}
-          <button style={styles.toggleLink} onClick={toggleMode}>
-            {mode === 'signin' ? 'Sign Up' : 'Sign In'}
-          </button>
-        </div>
+        {mode === 'signin' && (
+          <div style={{ textAlign: 'center', marginTop: '12px' }}>
+            <button
+              style={{ ...styles.toggleLink, fontSize: '13px', fontWeight: 400 }}
+              onClick={() => { setMode('forgot'); setError(''); }}
+            >
+              Forgot password?
+            </button>
+          </div>
+        )}
+
+        {mode === 'forgot' ? (
+          <div style={styles.toggleText}>
+            <button style={styles.toggleLink} onClick={() => { setMode('signin'); setError(''); }}>
+              Back to Sign In
+            </button>
+          </div>
+        ) : (
+          <div style={styles.toggleText}>
+            {mode === 'signin' ? "Don't have an account? " : 'Already have an account? '}
+            <button style={styles.toggleLink} onClick={toggleMode}>
+              {mode === 'signin' ? 'Sign Up' : 'Sign In'}
+            </button>
+          </div>
+        )}
       </div>
     </div>
   );
